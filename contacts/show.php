@@ -5,8 +5,10 @@ define('BASE_URL', '../');
 
 //-------------------------------------------------
 
-require_once BASE_DIR . 'config.php';
+require_once BASE_DIR . 'configs' . DS . 'dbconfig.php';
 require_once BASE_DIR . 'autoload.php';
+
+require_once BASE_DIR . 'db.php';
 
 //-------------------------------------------------
 
@@ -14,14 +16,10 @@ Utils::$templatePath = BASE_DIR . 'templates' . DS;
 
 //-------------------------------------------------
 
-$dbo = new Db($dbConfig);
-
 if (Request::Get("id") != "") {
 	$id = (int) Request::Get("id");
-	$contact = $dbo->row(sprintf(
-		"SELECT `contacts`.* FROM `contacts` WHERE `contacts`.`id` = %d",
-		$id
-	));
+	$contact = DbSingleton::Row(
+		"SELECT `contacts`.* FROM `contacts` WHERE `contacts`.`id` = ?", array($id));
 	if (is_null($contact)) {
 		Utils::Show404();
 	}

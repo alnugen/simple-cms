@@ -1,71 +1,107 @@
 <?php
 
-class Db {
+class Db
+{
+    /**
+     * @var PDO
+     */
+    protected $pdo;
 
-	private $dbo;
+    /**
+     * @var int
+     */
+    protected $affectedRows = 0;
 
-	public function __construct($dbConfig = array()) {
-		if (!empty($dbConfig)) {
-			$this->dbo = @new mysqli(
-				$dbConfig['host'],
-				$dbConfig['user'],
-				$dbConfig['pass'],
-				$dbConfig['name']
-			);
-			if (mysqli_connect_error()) {
-				die("Database Error: " . mysqli_connect_error());
-			}
-		} else {
-			die("Database Error: Invalid database configuration file.");
-		}
-	}
+    /**
+     * @param PDO $pdo
+     */
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
 
-	public function execute($sql = "") {
-		if ($sql != "") {
-			$return = $this->dbo->query($sql);
-			if ($this->dbo->error) {
-				die("Database Error: " . $this->dbo->error);
-			}
-			return $return;
-		} else {
-			die("Database Error: Empty query supplied.");
-		}
-	}
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return bool
+     */
+    public function execute($sql, $params = array())
+    {
+        try {
+            $stmt               = $this->pdo->prepare($sql);
+            $return             = $stmt->execute($params);
+            $this->affectedRows = $stmt->rowCount();
+            return $return;
+        } catch (PDOExecption $ex) {
+            throw new Exception("Database Error: " . $ex->getMessage());
+        }
+    }
 
-	public function row($sql = "") {
-		if ($sql != "") {
-			return FALSE !== $this->execute($sql) ? $this->execute($sql)->fetch_assoc() : NULL;
-		} else {
-			die("Database Error: Empty query supplied.");
-		}
-	}
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return array
+     */
+    public function rows($sql, $params = array())
+    {
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            $this->affectedRows = $stmt->rowCount();
+            return $stmt->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOExecption $ex) {
+            throw new Exception("Database Error: " . $ex->getMessage());
+        }
+    }
 
-	public function rows($sql = "") {
-		if ($sql != "") {
-			$rows = array();
-			$result = $this->execute($sql);
-			while ($row = $result->fetch_assoc()) {
-				$rows[] = $row;
-			}
-			return $rows;
-		} else {
-			die("Database Error: Empty query supplied.");
-		}
-	}
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return object|bool
+     */
+    public function row($sql, $params = array())
+    {
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            $this->affectedRows = $stmt->rowCount();
+            return $stmt->fetch(PDO::FETCH_OBJ);
+        } catch (PDOExecption $ex) {
+            throw new Exception("Database Error: " . $ex->getMessage());
+        }
+    }
 
-	public function numRows($sql = "") {
-		if ($sql != "") {
-			return FALSE !== $this->execute($sql) ? $this->execute($sql)->num_rows : -1;
-		} else {
-			die("Database Error: Empty query supplied.");
-		}
-	}
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return int
+     */
+    public function numRows($sql, $params = array())
+    {
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            $this->affectedRows = $stmt->rowCount();
+            return $this->getAffectedRows();
+        } catch (PDOExecption $ex) {
+            throw new Exception("Database Error: " . $ex->getMessage());
+        }
+    }
 
-	public function insertId() {
-		return $this->dbo->insert_id;
-	}
+    /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        return $this->affectedRows;
+    }
 
-	public function escString($value) {
-		return $this->dbo->real_escape_string($value);
-	}
+    /**
+     * @return int
+     */
+    public function getInsetId()
+    {
+        return $this->pdo->lastInsertId;
+    }
+
 }
