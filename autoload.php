@@ -12,7 +12,7 @@ function my_autoloader($className) {
 		$classPath = BASE_DIR . $autoloadPath . $className . '.php';
 		if (file_exists($classPath)) {
 			require_once $classPath;
-		}
+		} 
 	}
 }
 

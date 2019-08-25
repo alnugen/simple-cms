@@ -5,11 +5,11 @@
 <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
     <div class="form-group">
         <label for="fullname">Full Name: </label>
-        <input type="text" class="form-control" name="fullname" id="fullname"<?php echo $inputs != "" ? ' value="' . $inputs['fullname'] .'"' : ''; ?>>
+        <input type="text" class="form-control" name="fullname" id="fullname"<?php echo $inputs != "" ? ' value="' . $inputs->fullname .'"' : ''; ?>>
     </div>
     <div class="form-group">
         <label for="email">Email: </label>
-        <input type="text" class="form-control" name="email" id="email"<?php echo $inputs != "" ? ' value="' . $inputs['email'] .'"' : ''; ?>>
+        <input type="text" class="form-control" name="email" id="email"<?php echo $inputs != "" ? ' value="' . $inputs->email .'"' : ''; ?>>
     </div>
     <div class="form-group">
         <input type="submit" value="Edit Contact" class="btn btn-primary">

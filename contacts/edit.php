@@ -6,8 +6,10 @@ define('BASE_URL', '../');
 
 //-------------------------------------------------
 
-require_once BASE_DIR . 'config.php';
+require_once BASE_DIR . 'configs' . DS . 'dbconfig.php';
 require_once BASE_DIR . 'autoload.php';
+
+require_once BASE_DIR . 'db.php';
 
 //-------------------------------------------------
 
@@ -15,15 +17,10 @@ Utils::$templatePath = BASE_DIR . 'templates' . DS;
 
 //-------------------------------------------------
 
-$dbo = new Db($dbConfig);
-
 
 if (Request::Get("id") != "") {
-    $id               = (int) Request::Get("id");
-    $contact = $dbo->row(sprintf(
-		"SELECT `contacts`.* FROM `contacts` WHERE `contacts`.`id` = %d",
-		$id
-	));
+    $id      = (int) Request::Get("id");
+    $contact = DbSingleton::Row("SELECT `contacts`.* FROM `contacts` WHERE `contacts`.`id` = ?", array($id));
 } else {
     Utils::Show404();
 }
@@ -59,35 +56,24 @@ if (Request::Post("token") == md5("contact.edit")) {
 		$sql = <<<SQL
 UPDATE `contacts`
 SET
-`contacts`.`fullname` = '%s',
-`contacts`.`email` = '%s',
-`contacts`.`created_at` = '%s',
-`contacts`.`modified_at` = '%s'
+`contacts`.`fullname` = ?,
+`contacts`.`email` = ?,
+`contacts`.`created_at` = ?,
+`contacts`.`modified_at` = ?
 WHERE
-`contacts`.`id` = %d;
+`contacts`.`id` = ?;
 SQL;
-		$sql = sprintf(
-			$sql,
-			$dbo->escString($fullname),
-			$dbo->escString($email),
-			$contact['created_at'],
-			date('Y-m-d h:i:s'),
-			$id
-		);
-		// var_dump($sql); exit();
 
-		if ($dbo->execute($sql)) {
+		if (DbSingleton::Execute($sql, array($fullname, $email, $contact->created_at, date('Y-m-d h:i:s'), $id ))) {
 			Session::Flash("success", "Contact edited successfully.");
-			Response::Redirect(BASE_URL . "contacts/show.php?id=". $contact['id'] );
+			Response::Redirect(BASE_URL . "contacts/show.php?id=". $contact->id );
 		} else {
 			Session::Flash("error", "Could not insert data. Plese try again.");
-			Response::Redirect(BASE_URL . "contacts/edit.php?id=". $contact['id']);
+			Response::Redirect(BASE_URL . "contacts/edit.php?id=". $contact->id);
 		}
 	}
 
 }
-
-var_dump(dirname(__FILE__)); exit;
 
 //-------------------------------------------------
 

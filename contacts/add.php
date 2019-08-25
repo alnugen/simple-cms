@@ -1,13 +1,15 @@
 <?php
-date_default_timezone_set('Asia/Kathmandu');
+date_default_timezone_set('Australia/Sydney');
 define('DS', DIRECTORY_SEPARATOR);
 define('BASE_DIR', dirname(__FILE__) . DS . '..' . DS);
 define('BASE_URL', '../');
 
 //-------------------------------------------------
 
-require_once BASE_DIR . 'config.php';
+require_once BASE_DIR . 'configs' . DS . 'dbconfig.php';
 require_once BASE_DIR . 'autoload.php';
+
+require_once BASE_DIR . 'db.php';
 
 //-------------------------------------------------
 
@@ -43,22 +45,15 @@ if (Request::Post("token") == md5("contact.add")) {
 
 		Response::Redirect(BASE_URL . "contacts/add.php");
 	} else {
-		$dbo = new Db($dbConfig);
+
 		$sql = <<<SQL
 INSERT INTO `contacts`
 (`fullname`, `email`, `created_at`, `modified_at`)
 VALUES
-('%s', '%s', '%s', '%s');
+(?, ?, ?, ?);
 SQL;
-		$sql = sprintf(
-			$sql,
-			$dbo->escString($fullname),
-			$dbo->escString($email),
-			date('Y-m-d h:i:s'),
-			date('Y-m-d h:i:s')
-		);
 
-		if ($dbo->execute($sql)) {
+		if (DbSingleton::Execute($sql, array($fullname, $email, date('Y-m-d h:i:s'), date('Y-m-d h:i:s')))) {
 			Session::Flash("success", "New contact added successfully.");
 			Response::Redirect(BASE_URL . "contacts/add.php");
 		} else {

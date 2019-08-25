@@ -24,13 +24,13 @@
             <tbody>
                 <?php foreach($contacts as $contact): ?>
                 <tr>
-                    <td><?php echo $contact['id'] ?></td>
-                    <td><?php echo $contact['fullname'] ?></td>
-                    <td><?php echo $contact['email'] ?></td>
+                    <td><?php echo $contact->id ?></td>
+                    <td><?php echo $contact->fullname ?></td>
+                    <td><?php echo $contact->email ?></td>
                     <td>
-                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/edit.php?id=" . $contact['id']; ?>">Edit</a>
-                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/show.php?id=" . $contact['id']; ?>">Show</a>
-                        <a class="btn btn-sm btn-danger" href="<?php echo BASE_URL . "contacts/index.php?id=" . $contact['id']; ?>" onclick="return confirm('Are you sure, you want to delete?');">Delete</a>
+                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/edit.php?id=" . $contact->id; ?>">Edit</a>
+                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/show.php?id=" . $contact->id; ?>">Show</a>
+                        <a class="btn btn-sm btn-danger" href="<?php echo BASE_URL . "contacts/index.php?id=" . $contact->id; ?>" onclick="return confirm('Are you sure, you want to delete?');">Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
