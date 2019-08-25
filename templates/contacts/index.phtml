@@ -1,0 +1,49 @@
+<div class="space-bottom space-top">
+    <a href="<?php echo BASE_URL; ?>contacts/index.php" class="btn btn-sm btn-default">Conacts Listing Page</a>
+    <a href="<?php echo BASE_URL; ?>contacts/add.php" class="btn btn-sm btn-default">Add New Contacts</a>
+</div>
+
+<?php if ($contacts_total < 1): ?>
+<div class="alert alert-info">
+    There are <strong>no</strong> contacts defined.
+</div>
+<?php else: ?>
+<div class="alert alert-info">
+    There are <strong><?php echo $contacts_total; ?></strong> contacts defined.
+</div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Full Name</td>
+                    <td>Email </td>
+                    <td>Options</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($contacts as $contact): ?>
+                <tr>
+                    <td><?php echo $contact['id'] ?></td>
+                    <td><?php echo $contact['fullname'] ?></td>
+                    <td><?php echo $contact['email'] ?></td>
+                    <td>
+                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/edit.php?id=" . $contact['id']; ?>">Edit</a>
+                        <a class="btn btn-sm btn-default" href="<?php echo BASE_URL . "contacts/show.php?id=" . $contact['id']; ?>">Show</a>
+                        <a class="btn btn-sm btn-danger" href="<?php echo BASE_URL . "contacts/index.php?id=" . $contact['id']; ?>" onclick="return confirm('Are you sure, you want to delete?');">Delete</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>ID</td>
+                    <td>Full Name</td>
+                    <td>Email </td>
+                    <td>Options</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+<?php endif; ?>

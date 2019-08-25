@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?php echo $page_title; ?> - Contacts Management System</title>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/bootstrap.min.css">
+    <style>
+        .space-top { margin-top: 20px;}
+        .space-bottom { margin-bottom: 20px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Contacts Management System</h1>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h2><?php echo $page_title; ?></h2>
+                <?php if ($error != ""): ?>
+                    <div class="alert alert-danger">
+                        <?php echo $error; ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($success != ""): ?>
+                    <div class="alert alert-success">
+                        <?php echo $success; ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($errors != ""): ?>
+                    <div class="alert alert-danger">
+                        <ul>
+                            <?php foreach($errors as $key => $value): ?>
+                                <li><?php echo $errors[$key][0]; ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <?php echo $content; ?>
+            </div>
+        </div>
+    </div>    
+</body>
+</html>
