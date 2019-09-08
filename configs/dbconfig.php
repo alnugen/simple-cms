@@ -2,7 +2,7 @@
 
 return array(
 	'driver' => 'mysql',
-	'host' => 'mysql',
+	'host' => 'db',
 	'user' => 'root',
 	'pass' => 'p@ssWord123',
 	'name' => 'db001',
