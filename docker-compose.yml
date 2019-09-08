@@ -1,28 +1,94 @@
-version: '2'
+version: '3'
 services:
-  mysql:
-    image: mysql:5.7.27
-    container_name: mysql-server-80
-    command: --default-authentication-plugin=mysql_native_password
-  #        working_dir: /application
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
     volumes:
-      - .:/application
-    restart: always
+      - ./:/var/www
+      - ./docker-configs/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker-configs/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  db:
+    image: mysql:5.7.27
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8082:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=p@ssWord123
       - MYSQL_DATABASE=db001
       - MYSQL_USER=root
       - MYSQL_PASSWORD=p@ssWord123
-    ports:
-      - "8082:3306"
-  website:
-      container_name: simple-cms
-      image: pensiero/apache-php-mysql
-      build:
-        context: ./
-      volumes:
-        - ~/Documents/Projects/PHP/TUTS/simple-cms/:/var/www/html/
-      ports:
-        - 3030:80
-      depends_on:
-        - mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker-configs/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
+
+ 
+  # mysql:
+  #   image: mysql:5.7.27
+  #   container_name: mysql-server-80
+  #   command: --default-authentication-plugin=mysql_native_password
+  # #        working_dir: /application
+  #   volumes:
+  #     - .:/application
+  #   restart: always
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=p@ssWord123
+  #     - MYSQL_DATABASE=db001
+  #     - MYSQL_USER=root
+  #     - MYSQL_PASSWORD=p@ssWord123
+  #   ports:
+  #     - "8082:3306"
+  # website:
+  #     container_name: simple-cms
+  #     image: pensiero/apache-php-mysql
+  #     build:
+  #       context: ./
+  #     volumes:
+  #       - ~/Documents/Projects/PHP/TUTS/simple-cms/:/var/www/html/
+  #     ports:
+  #       - 3030:80
+  #     depends_on:
+  #       - mysql
